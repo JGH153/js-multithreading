@@ -1,0 +1,29 @@
+Why :host not targeting all content?
+How to apply material design to all components "/o duplicating for all?
+	Writhe my own super slim css as i only have a few elemements?
+
+How to update callbacks on changes to html? Add func?
+Can easily do one or two way data binding?
+Handle dissconnect (throw to frontpage with error)
+ng-if
+github actions
+create generic text-input component that uses WC inputs and event outputs correctly
+	with enter to send as event (onInputEnter)
+
+throw back to home if reload on room
+
+URL number id on room
+
+should cleanup comp ref on window on destory
+
+----
+Webrtc flow
+Create room 
+Add offer to room as host
+Guest join and add response based on host offer
+ICE <->
+Done
+	
+----
+TODO talk
+move demo link
