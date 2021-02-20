@@ -1,3 +1,5 @@
+// importScripts("https://cdn.jsdelivr.net/npm/jsdom@16.4.0/lib/api.min.js"); :(
+
 class WorkerTest extends HTMLElement {
   constructor() {
     super();

@@ -1,6 +1,6 @@
 import html from "./home-page.html";
 import css from "./home-page.css";
-import { setupShadow } from "../helpers";
+import { setupShadow, inlineWorker } from "../helpers";
 
 export class HomePage extends HTMLElement {
   constructor() {
@@ -13,6 +13,11 @@ export class HomePage extends HTMLElement {
   }
 
   disconnectedCallback() {}
+
+  workerWorker() {
+    const myWorker = new Worker("web-workers/hello-worker.js");
+    console.log(myWorker);
+  }
 
   startThreading() {
     console.log("yay");
@@ -56,31 +61,23 @@ export class HomePage extends HTMLElement {
     };
   }
 
-  inlineWorker(func) {
-    console.log(func);
-    return new Promise((resolve, reject) => {
-      // Build a worker from an anonymous function body
-      const blobURL = URL.createObjectURL(
-        new Blob(["(", func.toString(), ")()"], { // tod replace return with postMessage
-          type: "application/javascript",
-        })
-      );
-      const myWorker = new Worker(blobURL);
-      myWorker.onmessage = (message) => {
-        console.log("Return of", message.data);
-        resolve(message.data);
-      };
-
-      // Won't be needing this anymore
-      URL.revokeObjectURL(blobURL);
-    });
+  inlineWorkerExample() {
+    inlineWorker(() => {
+      let num = 0;
+      for (let i = 0; i < 10 ** 8; i++) {
+        Math.random() < 0.5 ? num-- : num++;
+      }
+      return num;
+    }).then((result) => console.log("Result is", result));
   }
 
-  inlineWorkerExample() {
-    this.inlineWorker(() => {
-      console.log("calculating");
-      postMessage(2 + 2);
-      return 1 + 1;
+  inlineWorkerFetchExample() {
+    inlineWorker(() => {
+      fetch(
+        "https://api.github.com/search/repositories?q=language:javascript&sort=stars&order=desc&per_page=100"
+      )
+        .then((response) => response.json())
+        .then((data) => postMessage(data));
     }).then((result) => console.log("Result is", result));
   }
 }
