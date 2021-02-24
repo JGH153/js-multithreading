@@ -1,6 +1,7 @@
 import html from "./home-page.html";
 import css from "./home-page.css";
 import { setupShadow, inlineWorker } from "../helpers";
+import { Pages } from "../models/Pages";
 
 export class HomePage extends HTMLElement {
   constructor() {
@@ -35,6 +36,33 @@ export class HomePage extends HTMLElement {
         console.timeEnd(timeLabel);
       };
     }
+  }
+
+  blockMainThread() {
+    let num = 0;
+    // a for/while loop leaves NO room for other elements
+    for (let i = 0; i < 10 ** 8; i++) {
+      Math.random() < 0.5 ? num-- : num++;
+    }
+    console.log("SUM", num);
+  }
+
+  startAsyncCalculation() {
+    this.asyncCalculation(0, 0);
+    console.time("asyncStart");
+  }
+
+  asyncCalculation(num, iterations) {
+    if (iterations >= 200) {
+      console.log("DONE!", num);
+      console.timeEnd("asyncStart");
+      return;
+    }
+    // sleeps for 1000 / 144 = 6,95
+    requestAnimationFrame(() => {
+      Math.random() < 0.5 ? num-- : num++;
+      this.asyncCalculation(num, iterations + 1);
+    });
   }
 
   startBroadcastThreads() {
@@ -79,5 +107,10 @@ export class HomePage extends HTMLElement {
         .then((response) => response.json())
         .then((data) => postMessage(data));
     }).then((result) => console.log("Result is", result));
+  }
+
+  gotoCanvasPage() {
+    const event = new CustomEvent("ChangePage", { detail: Pages.Canvas });
+    this.dispatchEvent(event);
   }
 }

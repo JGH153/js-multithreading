@@ -1,3 +1,4 @@
+import { CanvasPage } from "./canvas-page/canvas-page";
 import { HomePage } from "./home-page/home-page";
 import { PageRouter } from "./page-router/page-router";
 import { TextInput } from "./text-input/text-input";
@@ -18,6 +19,7 @@ import { TextInput } from "./text-input/text-input";
 // Define all custom elements (components)
 customElements.define("page-router", PageRouter);
 customElements.define("home-page", HomePage);
+customElements.define("canvas-page", CanvasPage);
 
 // Define all custom elements (directives)
 customElements.define("text-input", TextInput, { extends: "input" });

@@ -2,6 +2,12 @@
 <button class="button" onclick="this.workerWorker()">
   Worker worker example
 </button>
+<button class="button" onclick="this.blockMainThread()">
+  Block main thread
+</button>
+<button class="button" onclick="this.startAsyncCalculation()">
+  Block with sleep
+</button>
 <button class="button" onclick="this.startThreading()">Use all cores</button>
 <button class="button" onclick="this.startBroadcastThreads()">
   Cross thread talk
@@ -15,3 +21,11 @@
 <button class="button" onclick="this.inlineWorkerFetchExample()">
   Inline worker fetch
 </button>
+<button class="button" onclick="this.gotoCanvasPage()">
+  Canvas example
+</button>
+
+<div class="loaders">
+  <img src="assets/loading.gif" />
+  <img src="assets/loading.svg" />
+</div>

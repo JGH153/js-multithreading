@@ -4,4 +4,9 @@ export const Pages = Object.freeze({
     component: "home-page",
     title: "Home",
   },
+  Canvas: {
+    path: "/canvas",
+    component: "canvas-page",
+    title: "Canvas",
+  },
 });
