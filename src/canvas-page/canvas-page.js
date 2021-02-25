@@ -9,7 +9,7 @@ export class CanvasPage extends HTMLElement {
   imageData;
   originalImageData;
   ctx;
-  edgeThreshold = 100;
+  edgeThreshold = 10;
   #edgeDetectorService = new EdgeDetectorService();
 
   constructor() {
@@ -105,6 +105,31 @@ export class CanvasPage extends HTMLElement {
       .then((edgeData) => {
         this.ctx.putImageData(edgeData, 0, 0);
         console.timeEnd("edgeWorkWW");
+      });
+  }
+
+  startEdgeWWLoop() {
+    this.edgeWWLoop(0, 1, 150);
+  }
+
+  edgeWWLoop(currentThreshold, step, endThreshold) {
+    const canvas = this.shadowRoot.getElementById("canvas");
+    const imgData = this.originalImageData.slice(0); // make copy
+    this.#edgeDetectorService
+      .getEdgeImageWebWorker(
+        imgData,
+        canvas.width,
+        canvas.height,
+        currentThreshold
+      )
+      .then((edgeData) => {
+        this.ctx.putImageData(edgeData, 0, 0);
+        currentThreshold += step;
+        if (currentThreshold <= endThreshold) {
+          this.edgeWWLoop(currentThreshold, step, endThreshold);
+        } else {
+          console.log("Done");
+        }
       });
   }
 }
