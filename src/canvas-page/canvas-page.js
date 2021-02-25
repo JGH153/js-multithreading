@@ -108,8 +108,40 @@ export class CanvasPage extends HTMLElement {
       });
   }
 
+  startEdgeLoop() {
+    console.time("edgeLoop");
+    this.edgeLoop(0, 5, 100);
+  }
+
+  edgeLoop(currentThreshold, step, endThreshold) {
+    console.time("edgeWork");
+    const canvas = this.shadowRoot.getElementById("canvas");
+    const imgData = this.originalImageData.slice(0); // make copy
+    const edgeData = this.#edgeDetectorService.getEdgeImageMainTread(
+      imgData,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+      currentThreshold
+    );
+
+    this.ctx.putImageData(edgeData, 0, 0);
+    console.timeEnd("edgeWork");
+    currentThreshold += step;
+    if (currentThreshold <= endThreshold) {
+      requestAnimationFrame(() => {
+        this.edgeLoop(currentThreshold, step, endThreshold);
+      });
+    } else {
+      console.log("Done");
+      console.timeEnd("edgeLoop");
+    }
+  }
+
   startEdgeWWLoop() {
-    this.edgeWWLoop(0, 1, 150);
+    console.time("edgeWWLoop");
+    this.edgeWWLoop(0, 1, 100);
   }
 
   edgeWWLoop(currentThreshold, step, endThreshold) {
@@ -126,9 +158,12 @@ export class CanvasPage extends HTMLElement {
         this.ctx.putImageData(edgeData, 0, 0);
         currentThreshold += step;
         if (currentThreshold <= endThreshold) {
-          this.edgeWWLoop(currentThreshold, step, endThreshold);
+          requestAnimationFrame(() => {
+            this.edgeWWLoop(currentThreshold, step, endThreshold);
+          });
         } else {
           console.log("Done");
+          console.timeEnd("edgeWWLoop");
         }
       });
   }
