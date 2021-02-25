@@ -92,7 +92,7 @@ export class CanvasPage extends HTMLElement {
   }
 
   edgeImageWebWorker() {
-    console.time("edgeWork");
+    console.time("edgeWorkWW");
     const canvas = this.shadowRoot.getElementById("canvas");
     const imgData = this.originalImageData.slice(0); // make copy
     this.#edgeDetectorService
@@ -104,7 +104,7 @@ export class CanvasPage extends HTMLElement {
       )
       .then((edgeData) => {
         this.ctx.putImageData(edgeData, 0, 0);
-        console.timeEnd("edgeWork");
+        console.timeEnd("edgeWorkWW");
       });
   }
 }

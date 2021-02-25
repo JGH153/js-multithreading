@@ -30,8 +30,8 @@ const detectAndReturnEdges = (
   elementWidth = width;
   // TODO copy of data to perserve originale values
   const imgDataOriginal = imgData.slice(0);
-  for (let y = startY; y < workHeight; y++) {
-    for (let x = startX; x < workWidth; x++) {
+  for (let y = startY; y < startY + workHeight; y++) {
+    for (let x = startX; x < startX + workWidth; x++) {
       if (isPixelAtEdge(imgDataOriginal, x, y, edgeThreshold)) {
         setPixelColor(imgData, x, y, 255, 255, 255);
       } else {
@@ -40,7 +40,15 @@ const detectAndReturnEdges = (
     }
   }
 
-  const response = { imgData, startX, startY, width, height };
+  const response = {
+    imgData,
+    startX,
+    startY,
+    width,
+    height,
+    endWidth: startX + workWidth,
+    endHeight: startY + workHeight,
+  };
 
   postMessage(response);
 };

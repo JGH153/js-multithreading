@@ -39,16 +39,19 @@ export class EdgeDetectorService {
 
     return new Promise((resolve, reject) => {
       let workersReturned = 0;
-      const workersTotal = 2;
+      let returnedData = [];
+      const workersTotal = 4;
+      const blockSize = width / workersTotal;
+      console.time("edgeWorkWW - time in workers");
       for (let i = 0; i < workersTotal; i++) {
         const myWorker = new Worker("web-workers/edge-worker.js");
         const dataToSend = {
           imgData,
-          startX: i === 0 ? 0 : width / 2,
+          startX: i * blockSize,
           startY: 0,
           width,
           height,
-          workWidth: width,
+          workWidth: blockSize,
           workHeight: height,
           edgeThreshold,
         };
@@ -56,18 +59,51 @@ export class EdgeDetectorService {
         myWorker.onmessage = (message) => {
           // console.log("returning message main", message.data);
           workersReturned++;
+          returnedData.push(message.data);
           if (workersReturned === workersTotal) {
+            console.timeEnd("edgeWorkWW - time in workers");
             const imageDataCopy = new ImageData(
               new Uint8ClampedArray(message.data.imgData),
               width,
               height
             );
 
-            resolve(imageDataCopy);
+            const imageDataCombined = new ImageData(
+              new Uint8ClampedArray(
+                this.mergeImageData(returnedData, imgData, width)
+              ),
+              width,
+              height
+            );
+
+            resolve(imageDataCombined);
           }
         };
       }
     });
+  }
+
+  mergeImageData(workerDataArray, imgData, totalWidth) {
+    const combinded = imgData.slice(0);
+    workerDataArray.forEach((current) => {
+      // if (Math.random() < 0.3) {
+      //   return;
+      // }
+      for (let y = current.startY; y < current.endHeight; y++) {
+        for (let x = current.startX; x < current.endWidth; x++) {
+          const index = (x + y * totalWidth) * 4;
+          this.copyPixelValues(combinded, current.imgData, index);
+        }
+      }
+    });
+    return combinded;
+  }
+
+  copyPixelValues(target, from, index) {
+    target[index] = from[index];
+    target[index + 1] = from[index + 1];
+    target[index + 2] = from[index + 2];
+    target[index + 3] = from[index + 3];
   }
 
   isPixelAtEdge(data, x, y, edgeThreshold) {
