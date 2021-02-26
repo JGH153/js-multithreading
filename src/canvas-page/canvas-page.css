@@ -14,3 +14,10 @@ h1 {
 #roomIdInput {
   min-width: 300px;
 }
+
+.spinner-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: none;
+}

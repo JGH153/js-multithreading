@@ -63,12 +63,6 @@ export class EdgeDetectorService {
           myWorker.terminate();
           if (workersReturned === workersTotal) {
             console.timeEnd("edgeWorkWW - time in workers");
-            const imageDataCopy = new ImageData(
-              new Uint8ClampedArray(message.data.imgData),
-              width,
-              height
-            );
-
             const imageDataCombined = new ImageData(
               new Uint8ClampedArray(
                 this.mergeImageData(returnedData, imgData, width)

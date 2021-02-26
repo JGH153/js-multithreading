@@ -11,19 +11,46 @@ export class CanvasPage extends HTMLElement {
   ctx;
   edgeThreshold = 10;
   #edgeDetectorService = new EdgeDetectorService();
+  currentPondus = 0;
+  maxPondus = 5;
+  spinnerVisible = false;
 
   constructor() {
     super();
     setupShadow(this, html, css);
   }
 
-  connectedCallback() {
+  spinner() {
+    this.spinnerVisible = !this.spinnerVisible;
+    const element = this.shadowRoot.getElementById("spinner");
+    if (this.spinnerVisible) {
+      element.style = "display: block";
+    } else {
+      element.style = "display: none";
+    }
+  }
+
+  renderNewPondus() {
     const img = new Image();
     img.crossOrigin = "Anonymous";
-    img.src = "assets/pondus.jpg";
+    img.src = "assets/pondus" + this.currentPondus + ".jpg";
     img.onload = () => {
       this.draw(img);
     };
+  }
+
+  reRender() {
+    const canvas = this.shadowRoot.getElementById("canvas");
+    const imageData = new ImageData(
+      new Uint8ClampedArray(this.originalImageData),
+      canvas.width,
+      canvas.height
+    );
+    this.ctx.putImageData(imageData, 0, 0);
+  }
+
+  connectedCallback() {
+    this.renderNewPondus();
   }
 
   draw(img) {
@@ -38,7 +65,15 @@ export class CanvasPage extends HTMLElement {
 
   disconnectedCallback() {}
 
-  greyscale() {
+  changeImage() {
+    this.currentPondus++;
+    if (this.currentPondus > this.maxPondus) {
+      this.currentPondus = 0;
+    }
+    this.renderNewPondus();
+  }
+
+  greyScale() {
     console.log("grey!");
     for (let i = 0; i < this.data.length; i += 4) {
       const avg = (this.data[i] + this.data[i + 1] + this.data[i + 2]) / 3;
