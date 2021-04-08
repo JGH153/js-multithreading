@@ -25,11 +25,7 @@ export class EdgeDetectorService {
       }
     }
 
-    const imageDataCopy = new ImageData(
-      new Uint8ClampedArray(imgData),
-      width,
-      height
-    );
+    const imageDataCopy = new ImageData(new Uint8ClampedArray(imgData), width, height);
 
     return imageDataCopy;
   }
@@ -64,9 +60,7 @@ export class EdgeDetectorService {
           if (workersReturned === workersTotal) {
             console.timeEnd("edgeWorkWW - time in workers");
             const imageDataCombined = new ImageData(
-              new Uint8ClampedArray(
-                this.mergeImageData(returnedData, imgData, width)
-              ),
+              new Uint8ClampedArray(this.mergeImageData(returnedData, imgData, width)),
               width,
               height
             );
@@ -79,7 +73,7 @@ export class EdgeDetectorService {
   }
 
   mergeImageData(workerDataArray, imgData, totalWidth) {
-    const combinded = imgData;
+    const combined = imgData;
     workerDataArray.forEach((current) => {
       // if (Math.random() < 0.3) {
       //   return;
@@ -87,11 +81,28 @@ export class EdgeDetectorService {
       for (let y = current.startY; y < current.endHeight; y++) {
         for (let x = current.startX; x < current.endWidth; x++) {
           const index = (x + y * totalWidth) * 4;
-          this.copyPixelValues(combinded, current.imgData, index);
+          this.copyPixelValues(combined, current.imgData, index);
+          // this.greyNonEdgePixelValues(combined, current.imgData, index);
         }
       }
     });
-    return combinded;
+    return combined;
+  }
+
+  greyNonEdgePixelValues(target, from, index) {
+    const change = 20;
+    if (from[index] === 255) {
+      target[index] = target[index] + change;
+      target[index + 1] = target[index + 1] + change;
+      target[index + 2] = target[index + 2] + change;
+      target[index + 3] = target[index + 3] + change;
+    } else {
+      const avg = (target[index] + target[index + 1] + target[index + 2]) / 3;
+      target[index] = avg;
+      target[index + 1] = avg;
+      target[index + 2] = avg;
+      target[index + 3] = avg;
+    }
   }
 
   copyPixelValues(target, from, index) {

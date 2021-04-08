@@ -12,7 +12,7 @@ export class CanvasPage extends HTMLElement {
   edgeThreshold = 10;
   #edgeDetectorService = new EdgeDetectorService();
   currentPondus = 0;
-  maxPondus = 5;
+  maxPondus = 6;
   spinnerVisible = false;
 
   constructor() {
@@ -41,11 +41,7 @@ export class CanvasPage extends HTMLElement {
 
   reRender() {
     const canvas = this.shadowRoot.getElementById("canvas");
-    const imageData = new ImageData(
-      new Uint8ClampedArray(this.originalImageData),
-      canvas.width,
-      canvas.height
-    );
+    const imageData = new ImageData(new Uint8ClampedArray(this.originalImageData), canvas.width, canvas.height);
     this.ctx.putImageData(imageData, 0, 0);
   }
 
@@ -74,8 +70,21 @@ export class CanvasPage extends HTMLElement {
   }
 
   greyScale() {
-    console.log("grey!");
     for (let i = 0; i < this.data.length; i += 4) {
+      const avg = (this.data[i] + this.data[i + 1] + this.data[i + 2]) / 3;
+      this.data[i] = avg; // red
+      this.data[i + 1] = avg; // green
+      this.data[i + 2] = avg; // blue
+    }
+    this.ctx.putImageData(this.imageData, 0, 0);
+  }
+
+  greyAndColorScale() {
+    const limit = 115;
+    for (let i = 0; i < this.data.length; i += 4) {
+      if (this.data[i + 2] > limit) {
+        continue;
+      }
       const avg = (this.data[i] + this.data[i + 1] + this.data[i + 2]) / 3;
       this.data[i] = avg; // red
       this.data[i + 1] = avg; // green
@@ -131,12 +140,7 @@ export class CanvasPage extends HTMLElement {
     const canvas = this.shadowRoot.getElementById("canvas");
     const imgData = this.originalImageData.slice(0); // make copy
     this.#edgeDetectorService
-      .getEdgeImageWebWorker(
-        imgData,
-        canvas.width,
-        canvas.height,
-        this.edgeThreshold
-      )
+      .getEdgeImageWebWorker(imgData, canvas.width, canvas.height, this.edgeThreshold)
       .then((edgeData) => {
         this.ctx.putImageData(edgeData, 0, 0);
         console.timeEnd("edgeWorkWW");
@@ -183,12 +187,7 @@ export class CanvasPage extends HTMLElement {
     const canvas = this.shadowRoot.getElementById("canvas");
     const imgData = this.originalImageData.slice(0); // make copy
     this.#edgeDetectorService
-      .getEdgeImageWebWorker(
-        imgData,
-        canvas.width,
-        canvas.height,
-        currentThreshold
-      )
+      .getEdgeImageWebWorker(imgData, canvas.width, canvas.height, currentThreshold)
       .then((edgeData) => {
         this.ctx.putImageData(edgeData, 0, 0);
         currentThreshold += step;
