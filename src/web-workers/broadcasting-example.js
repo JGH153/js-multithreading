@@ -8,9 +8,9 @@ bc.onmessage = (message) => {
 
 onmessage = (message) => {
   myId = message.data;
-  console.log("worker got message and is online", myId);
+  console.log("Worker got message and is online with ID:", myId);
   if (myId === 3) {
-    // last worker
+    // last worker send broadcast channel message to all workers
     console.log("Sending BC message");
     bc.postMessage("42");
   }

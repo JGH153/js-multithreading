@@ -19,6 +19,9 @@
   border-radius: 4px;
   overflow: visible;
   cursor: pointer;
+
+  /* background-color: #1867c0 !important;
+  border-color: #1867c0 !important; */
 }
 /* 
 .button-large {

@@ -3,7 +3,6 @@ import css from "./canvas-page.css";
 import { setupShadow, inlineWorker } from "../helpers";
 import { EdgeDetectorService } from "../services/edge-detector.service";
 
-// https://github.com/JGH153/webrtc/tree/master/angular/src/app/image-manipulation
 export class CanvasPage extends HTMLElement {
   data;
   imageData;
@@ -14,6 +13,7 @@ export class CanvasPage extends HTMLElement {
   currentPondus = 0;
   maxPondus = 6;
   spinnerVisible = false;
+  runLoops = false;
 
   constructor() {
     super();
@@ -31,18 +31,25 @@ export class CanvasPage extends HTMLElement {
   }
 
   renderNewPondus() {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.src = "assets/pondus" + this.currentPondus + ".jpg";
-    img.onload = () => {
-      this.draw(img);
-    };
+    // in case slow rendering loop is running
+    requestAnimationFrame(() => {
+      this.runLoops = false;
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.src = "assets/pondus" + this.currentPondus + ".jpg";
+      img.onload = () => {
+        this.draw(img);
+      };
+    });
   }
 
   reRender() {
-    const canvas = this.shadowRoot.getElementById("canvas");
-    const imageData = new ImageData(new Uint8ClampedArray(this.originalImageData), canvas.width, canvas.height);
-    this.ctx.putImageData(imageData, 0, 0);
+    requestAnimationFrame(() => {
+      this.runLoops = false;
+      const canvas = this.shadowRoot.getElementById("canvas");
+      const imageData = new ImageData(new Uint8ClampedArray(this.originalImageData), canvas.width, canvas.height);
+      this.ctx.putImageData(imageData, 0, 0);
+    });
   }
 
   connectedCallback() {
@@ -149,6 +156,7 @@ export class CanvasPage extends HTMLElement {
 
   startEdgeLoop() {
     console.time("edgeLoop");
+    this.runLoops = true;
     this.edgeLoop(0, 5, 100);
   }
 
@@ -168,7 +176,7 @@ export class CanvasPage extends HTMLElement {
     this.ctx.putImageData(edgeData, 0, 0);
     console.timeEnd("edgeWork");
     currentThreshold += step;
-    if (currentThreshold <= endThreshold) {
+    if (currentThreshold <= endThreshold && this.runLoops) {
       requestAnimationFrame(() => {
         this.edgeLoop(currentThreshold, step, endThreshold);
       });
@@ -180,6 +188,7 @@ export class CanvasPage extends HTMLElement {
 
   startEdgeWWLoop() {
     console.time("edgeWWLoop");
+    this.runLoops = true;
     this.edgeWWLoop(0, 1, 100);
   }
 
@@ -191,7 +200,7 @@ export class CanvasPage extends HTMLElement {
       .then((edgeData) => {
         this.ctx.putImageData(edgeData, 0, 0);
         currentThreshold += step;
-        if (currentThreshold <= endThreshold) {
+        if (currentThreshold <= endThreshold && this.runLoops) {
           requestAnimationFrame(() => {
             this.edgeWWLoop(currentThreshold, step, endThreshold);
           });

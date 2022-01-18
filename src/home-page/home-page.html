@@ -1,29 +1,25 @@
 <img src="assets/loading.gif" />
 
 <h1>JS mulithreading</h1>
-<button class="button" onclick="this.workerWorker()">
-  Worker worker example
-</button>
-<button class="button" onclick="this.blockMainThread()">
-  Block main thread
-</button>
-<button class="button" onclick="this.startAsyncCalculation()">
-  Block with sleep
-</button>
-<button class="button" onclick="this.startThreading()">Use all cores</button>
-<button class="button" onclick="this.startBroadcastThreads()">
-  Cross thread talk
-</button>
-<button class="button" onclick="this.customElement()">
-  Custom element thread talk
-</button>
-<button class="button" onclick="this.inlineWorkerExample()">
-  Inline worker
-</button>
-<button class="button" onclick="this.inlineWorkerFetchExample()">
-  Inline worker fetch
-</button>
-<button class="button" onclick="this.gotoCanvasPage()">Canvas example</button>
+<div class="container">
+  <div class="column">
+    <button class="button" onclick="this.simpleWorker()">Simple worker example</button>
+    <button class="button" onclick="this.workerMessaging()">Worker messaging</button>
+    <button class="button" onclick="this.workerWorker()">Worker worker example</button>
+    <button class="button" onclick="this.blockMainThread()">Block main thread 🛑</button>
+    <button class="button" onclick="this.blockMainThreadNoBP()">Block main thread no branch prediction 🛑</button>
+    <button class="button" onclick="this.startAsyncCalculation()">Block with sleep 😴</button>
+  </div>
+  <div class="column">
+    <button class="button" onclick="this.startThreading()">Use all cores 💪</button>
+    <button class="button" onclick="this.startBroadcastThreads()">Cross thread BC talk</button>
+    <button class="button" onclick="this.customElement()">Custom element thread talk</button>
+    <button class="button" onclick="this.inlineWorkerExample()">Inline worker</button>
+    <button class="button" onclick="this.inlineWorkerFetchExample()">Inline worker fetch</button>
+    <button class="button" onclick="this.workerReadFile()">Read file in worker</button>
+  </div>
+</div>
+<button class="button" onclick="this.gotoCanvasPage()">Canvas example ➡️</button>
 
 <div class="loaders">
   <img src="assets/loading.svg" />

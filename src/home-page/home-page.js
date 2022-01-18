@@ -15,36 +15,44 @@ export class HomePage extends HTMLElement {
 
   disconnectedCallback() {}
 
-  workerWorker() {
-    const myWorker = new Worker("web-workers/hello-worker.js");
+  simpleWorker() {
+    const myWorker = new Worker("web-workers/simple-worker.js");
     console.log(myWorker);
   }
 
-  startThreading() {
-    console.log("yay");
+  workerMessaging() {
+    const myWorker = new Worker("web-workers/reply-worker.js");
+    myWorker.onmessage = (message) => {
+      console.log("Main thread got message", message);
+    };
+    myWorker.postMessage("Hello");
+  }
 
-    let sum = 0;
-
-    for (let i = 0; i < 24; i++) {
-      const timeLabel = "Thread" + i;
-      console.time(timeLabel);
-      const myWorker = new Worker("web-workers/high-cpu-example.js");
-
-      myWorker.onmessage = (message) => {
-        sum += message.data;
-        console.log("new sum", sum);
-        console.timeEnd(timeLabel);
-      };
-    }
+  workerWorker() {
+    new Worker("web-workers/hello-worker.js");
   }
 
   blockMainThread() {
+    console.time("blockMainThread");
+    let num = 0;
+    // a for/while loop leaves NO room for other elements
+    for (let i = 0; i < 10 ** 8; i++) {
+      num++;
+      // num += Math.random();
+    }
+    console.log("SUM", num);
+    console.timeEnd("blockMainThread");
+  }
+
+  blockMainThreadNoBP() {
+    console.time("blockMainThreadNoBP");
     let num = 0;
     // a for/while loop leaves NO room for other elements
     for (let i = 0; i < 10 ** 8; i++) {
       Math.random() < 0.5 ? num-- : num++;
     }
     console.log("SUM", num);
+    console.timeEnd("blockMainThreadNoBP");
   }
 
   startAsyncCalculation() {
@@ -58,11 +66,31 @@ export class HomePage extends HTMLElement {
       console.timeEnd("asyncStart");
       return;
     }
-    // sleeps for 1000 / 144 = 6,95
+    // sleeps for 1000 / 144 = 6,95ms
+    // runs for 6.95ms * 200 = 1.390sec
     requestAnimationFrame(() => {
       Math.random() < 0.5 ? num-- : num++;
       this.asyncCalculation(num, iterations + 1);
     });
+  }
+
+  startThreading() {
+    console.log("Starting all cores");
+
+    let sum = 0;
+
+    // no safari support
+    for (let i = 0; i < window.navigator.hardwareConcurrency; i++) {
+      const timeLabel = "Thread" + i;
+      console.time(timeLabel);
+      const myWorker = new Worker("web-workers/high-cpu-example.js");
+
+      myWorker.onmessage = (message) => {
+        sum += message.data;
+        console.log("new sum", sum);
+        console.timeEnd(timeLabel);
+      };
+    }
   }
 
   startBroadcastThreads() {
@@ -83,7 +111,6 @@ export class HomePage extends HTMLElement {
 
   customElement() {
     const myWorker = new Worker("web-workers/custom-element.js");
-    // myWorker.postMessage(HTMLElement); :(
     myWorker.onmessage = (message) => {
       console.log("returning message main", message);
     };
@@ -96,17 +123,19 @@ export class HomePage extends HTMLElement {
         Math.random() < 0.5 ? num-- : num++;
       }
       return num;
-    }).then((result) => console.log("Result is", result));
+    }).then((result) => console.log("Result from inline worker is", result));
   }
 
   inlineWorkerFetchExample() {
     inlineWorker(() => {
-      fetch(
-        "https://api.github.com/search/repositories?q=language:javascript&sort=stars&order=desc&per_page=100"
-      )
+      fetch("https://api.github.com/search/repositories?q=language:javascript&sort=stars&order=desc&per_page=100")
         .then((response) => response.json())
         .then((data) => postMessage(data));
-    }).then((result) => console.log("Result is", result));
+    }).then((result) => console.log("Result from inline worker is", result));
+  }
+
+  workerReadFile() {
+    // read-file-sync
   }
 
   gotoCanvasPage() {
