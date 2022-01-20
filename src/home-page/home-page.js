@@ -135,7 +135,17 @@ export class HomePage extends HTMLElement {
   }
 
   workerReadFile() {
-    // read-file-sync
+    const myWorker = new Worker("web-workers/read-file-sync.js");
+    myWorker.onmessage = (message) => {
+      console.log("Content of file is: ", message.data);
+    };
+
+    // need to get element directly as files are not included in change event
+    const fileToRead = this.shadowRoot.getElementById("workerFileInput").files[0];
+
+    // can also just create text file directly with blob and send to worker
+    // const blob = new Blob(["My file content"], { type: "text/plain" });
+    myWorker.postMessage(fileToRead);
   }
 
   gotoCanvasPage() {

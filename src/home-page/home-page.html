@@ -16,7 +16,8 @@
     <button class="button" onclick="this.customElement()">Custom element thread talk</button>
     <button class="button" onclick="this.inlineWorkerExample()">Inline worker</button>
     <button class="button" onclick="this.inlineWorkerFetchExample()">Inline worker fetch</button>
-    <button class="button" onclick="this.workerReadFile()">Read file in worker</button>
+    <label for="workerFileInput" class="button">Select file to be parsed in worker:</label>
+    <input type="file" accept=".txt" id="workerFileInput" class="hidden" onchange="this.workerReadFile()" />
   </div>
 </div>
 <button class="button" onclick="this.gotoCanvasPage()">Canvas example ➡️</button>

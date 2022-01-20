@@ -19,6 +19,8 @@
   border-radius: 4px;
   overflow: visible;
   cursor: pointer;
+  background-color: white;
+  color: black;
 
   /* background-color: #1867c0 !important;
   border-color: #1867c0 !important; */
@@ -34,4 +36,9 @@
 }
 .button:active {
   transform: scale(0.95);
+}
+
+.hidden {
+  opacity: 0;
+  display: none;
 }
