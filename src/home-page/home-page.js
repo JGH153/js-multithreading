@@ -10,7 +10,7 @@ export class HomePage extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log("online!");
+    // console.log("online!");
   }
 
   disconnectedCallback() {}
@@ -36,7 +36,7 @@ export class HomePage extends HTMLElement {
     console.time("blockMainThread");
     let num = 0;
     // a for/while loop leaves NO room for other elements
-    for (let i = 0; i < 10 ** 8; i++) {
+    for (let i = 0; i < 10 ** 10; i++) {
       num++;
       // num += Math.random();
     }

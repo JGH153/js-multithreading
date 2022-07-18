@@ -21,3 +21,10 @@ h1 {
   left: 10px;
   display: none;
 }
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
